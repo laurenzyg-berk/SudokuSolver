@@ -1,7 +1,7 @@
 from collections import deque
 
 board = [
-    [7, 8, 0, 4, 0, 0, 1, 2, 0],
+    [7, 8, 0, 4, 0, 0, 1, 2, 9],
     [6, 0, 0, 0, 7, 5, 0, 0, 9],
     [0, 0, 0, 6, 0, 1, 0, 7, 8],
     [0, 0, 7, 0, 4, 0, 2, 6, 0],
@@ -37,6 +37,28 @@ def print_board(board):
             else:
                 print(str(board[i][j]) + " ", end="")
 
+def valid_starting_board(board):
+    length = len(board)
+    rows_list, cols_list, quads_list = [], [], []
+    for i in range(length):
+        rows_list.append([])
+        cols_list.append([])
+        quads_list.append([])
+    for i in range(length):
+        for j in range(length):
+            num = board[i][j]
+            if num != '.':
+                if num in rows_list[i]:
+                    return False
+                elif num in cols_list[j]:
+                    return False
+                elif num in quads_list[(3 * (i // 3) + (j // 3))]:
+                    return False
+                rows_list[i].append(num)
+                cols_list[j].append(num)
+                quads_list[(3 * (i // 3) + (j // 3))].append(num)
+    return True
+
 def valid_board(board, i, j, num):
     rows, cols = len(board), len(board[0])
     # check values in row
@@ -68,6 +90,12 @@ def valid_board(board, i, j, num):
     return True
 
 def fill_board(board):
+    if not valid_starting_board(board):
+        print("Invalid board, cannot be solved.")
+        return
+    print("Before:\n")
+    print_board(board)
+    print()
     rows, cols = len(board), len(board[0])
     stack = deque()
     i, j = 0, 0
@@ -83,14 +111,13 @@ def fill_board(board):
                         # backtrack
                         stack, board = backtrack(board, stack)
                         if len(stack) == 0:
-                            print("Invalid board, cannot be solved")
+                            print("Invalid board, cannot be solved.")
                             return
                         i, j = stack[-1][0], stack[-1][1]
             j += 1
         i += 1
         j = 0
-        print_board(board)
-        print()
+    print("After:\n")
     print_board(board)
 
 def backtrack(board, stack):
