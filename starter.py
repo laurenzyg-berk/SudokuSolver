@@ -1,3 +1,4 @@
+# starter.py
 from collections import deque
 
 board = [
@@ -47,7 +48,7 @@ def valid_starting_board(board):
     for i in range(length):
         for j in range(length):
             num = board[i][j]
-            if num != '.':
+            if num != 0:
                 if num in rows_list[i]:
                     return False
                 elif num in cols_list[j]:
@@ -119,6 +120,7 @@ def fill_board(board):
         j = 0
     print("After:\n")
     print_board(board)
+    return board
 
 def backtrack(board, stack):
     if len(stack) == 0:
@@ -134,5 +136,3 @@ def backtrack(board, stack):
                 return (stack, board)
         board[i][j] = 0
     return (stack, board)
-
-fill_board(board)
