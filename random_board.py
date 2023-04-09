@@ -1,7 +1,5 @@
 # random_board.py
 
-# Retrieves a random sudoku puzzle from a puzzle bank, and solves the puzzle.
-
 from starter import fill_board, print_board
 import requests as reqs
 import random
@@ -14,6 +12,10 @@ LINK_ARR = ["https://raw.githubusercontent.com/grantm/sudoku-exchange-puzzle-ban
             "https://raw.githubusercontent.com/grantm/sudoku-exchange-puzzle-bank/master/hard.txt",
             "https://raw.githubusercontent.com/grantm/sudoku-exchange-puzzle-bank/master/diabolical.txt"]
 
+"""
+engine:
+    Retrieves the desired level of difficulty from the user, gets the sudoku board corresponding to that difficulty level, and solves the board.
+"""
 def engine():
     level = int(input("Enter level of difficulty: \n(Easy = 1 | Medium = 2 | Hard = 3 | Diabolical = 4)\n"))
     correct_input = level == 1 or level == 2 or level == 3 or level == 4
@@ -22,12 +24,15 @@ def engine():
             level = input("Invalid input. Please enter a number from 1-4 corresponding to difficulty level\n1 = easiest, 4 = hardest\n")
             correct_input = level == 1 or level == 2 or level == 3 or level == 4
     
-    # get a random line (sudoku board) from the link corresponding to the requested difficulty level
-    puzzle_line = get_board(level)
-    # parse through line to get board
-    board = parse_board(puzzle_line)
+    # get a random sudoku board from the link corresponding to the requested difficulty level
+    board = get_board(level)
+    # solve the board
     fill_board(board)
 
+"""
+get_board:
+    Retrieves a random sudoku puzzle of a given difficulty from a link to a puzzle bank, and returns the unsolved puzzle.
+"""
 def get_board(level):
     link = ""
     if MASTER_ARR == []:
@@ -43,8 +48,14 @@ def get_board(level):
     # pick random line (sudoku) to retrieve
     puzzle_num = random.randint(0, len(MASTER_ARR[level]) - 1)
     puzzle_line = (MASTER_ARR[level])[puzzle_num]
-    return puzzle_line
+    # parse through puzzle line, return board
+    return parse_board(puzzle_line)
 
+"""
+retrieve_arr:
+    Helper function for get_board.
+    Retrieves and returns an array of sudoku puzzles from a given link.
+"""
 def retrieve_arr(link):
     page = reqs.get(link)
     arr = []
@@ -52,6 +63,10 @@ def retrieve_arr(link):
         arr += [''.join(line)]
     return arr
 
+"""
+parse_board:
+    Parses through a line containing a sudoku board, and returns the board as a 2D array.
+"""
 def parse_board(line):
     board_line = ""
     for piece in line.split(' '):
@@ -69,7 +84,3 @@ def parse_board(line):
             j += 1
         board[j] += [int(board_line[i])]
     return board
-        
-        
-engine()
-    
