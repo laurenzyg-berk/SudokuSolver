@@ -1,18 +1,14 @@
 # starter.py
+
+# Helper functions for Sudoku GUI
+
 from collections import deque
 
-board = [
-    [7, 8, 0, 4, 0, 0, 1, 2, 0],
-    [6, 0, 0, 0, 7, 5, 0, 0, 9],
-    [0, 0, 0, 6, 0, 1, 0, 7, 8],
-    [0, 0, 7, 0, 4, 0, 2, 6, 0],
-    [0, 0, 1, 0, 5, 0, 9, 3, 0],
-    [9, 0, 4, 0, 6, 0, 0, 0, 5],
-    [0, 7, 0, 3, 0, 0, 0, 1, 2],
-    [1, 2, 0, 0, 0, 7, 4, 0, 0],
-    [0, 4, 9, 2, 0, 6, 0, 0, 7]
-]
-
+"""
+print_board:
+    Prints a nicely formatted Sudoku board for visualization. 
+    Does not return anything.
+"""
 def print_board(board):
     rows, cols = len(board), len(board[0])
     for i in range(rows):
@@ -26,6 +22,11 @@ def print_board(board):
             else:
                 print(str(board[i][j]) + " ", end="")
 
+"""
+valid_starting_board:
+    Checks that thes starting Sudoku board is valid.
+    Returns True if the board is valid; returns False otherwise.
+"""
 def valid_starting_board(board):
     length = len(board)
     rows_list, cols_list, quads_list = [], [], []
@@ -48,6 +49,11 @@ def valid_starting_board(board):
                 quads_list[(3 * (i // 3) + (j // 3))].append(num)
     return True
 
+"""
+valid_board:
+    Checks that it is a valid move to place num at location [i, j] on the current board. 
+    Returns True if move is valid; returns False otherwise.
+"""
 def valid_board(board, i, j, num):
     rows, cols = len(board), len(board[0])
     # check values in row
@@ -78,13 +84,14 @@ def valid_board(board, i, j, num):
                 return False
     return True
 
+"""
+fill_board:
+    Solves the given Sudoku board.
+    Returns True if the board is able to be solved; returns False otherwise.
+"""
 def fill_board(board):
     if not valid_starting_board(board):
-        print("Invalid board, cannot be solved.")
-        return
-    print("Before:\n")
-    print_board(board)
-    print()
+        return False
     rows, cols = len(board), len(board[0])
     stack = deque()
     i, j = 0, 0
@@ -98,21 +105,23 @@ def fill_board(board):
                         break
                     if k == 9:
                         # backtrack
-                        stack, board = backtrack(board, stack)
+                        board, stack = backtrack(board, stack)
                         if len(stack) == 0:
-                            print("Invalid board, cannot be solved.")
-                            return
+                            return False
                         i, j = stack[-1][0], stack[-1][1]
             j += 1
         i += 1
         j = 0
-    print("After:\n")
-    print_board(board)
-    return board
+    return True
 
+"""
+backtrack:
+    Helper function for fill_board.
+    Backtracks through a stack of locations until a new valid move is found; returns the new board and stack.
+"""
 def backtrack(board, stack):
     if len(stack) == 0:
-        return (stack, board)
+        return (board, stack)
     while len(stack) != 0:
         loc = stack.pop()
         i, j = loc[0], loc[1]
@@ -121,6 +130,6 @@ def backtrack(board, stack):
             if valid_board(board, i, j, k):
                 board[i][j] = k
                 stack.append(loc)
-                return (stack, board)
+                return (board, stack)
         board[i][j] = 0
-    return (stack, board)
+    return (board, stack)
